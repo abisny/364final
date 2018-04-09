@@ -75,11 +75,30 @@ def create_game(player, correct, guess):
 ##### MODELS #####
 ##################
 
+# ASSOCIATION TABLE: many-to-many relationship between games and movies
+guessed_movies = db.Table('guessed_movies',  db.Column('game_id', db.Integer,  db.ForeignKey('games.id')), db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
+
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), unique=True, index=True)
+    password_hash = db.Column(db.String(128))
+    # one-to-many relationship between a user and their games
+    games = db.relationship('Game', backref='User')
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 class Movie(db.Model):
     __tablename__ = "movies"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64))
-    release_year = db.Column(db.Integer, db.ForeignKey('years.name'))
+    release_year = db.Column(db.Integer,  db.ForeignKey('years.name'))
     def __repr__(self):
         return "{}, {} (ID: {})".format(self.title, self.release_year, self.id)
 
@@ -87,7 +106,7 @@ class Year(db.Model):
     __tablename__ = "years"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Integer, unique=True)
-    movies = db.relationship('Movie', backref='Genre')
+    movies = db.relationship('Movie', backref='Year')
     def __repr__(self):
         return "{} (ID: {})".format(self.name, self.id)
 
@@ -96,7 +115,7 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player = db.Column(db.String(64))
     current_score = db.Column(db.Integer)
-    guesses = db.Column(db.String)
+    guesses = db.relationship('Movie',  secondary=guessed_movies, backref=db.backref('movies', lazy='dynamic'), lazy='dynamic')
     def __repr__(self):
         return "Game #{} ({}): {}".format(self.id, self.player, self.current_score)
 
@@ -170,14 +189,13 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
-@app.route('/movies', methods=['GET', 'POST'])
+@app.route('/movie_search', methods=['GET', 'POST'])
 @login_required
     form = MovieForm()
     if form.validate_on_submit():
-        ia = IMDb()
         r = requests.get('http://www.imdb.com/find?q=' + form.title.data + '&s=all')
         soup = BeautifulSoup(r.content, 'html.parser')
-        results = soup.find_all('td',{'class':'result_text'})
+        results = soup.find_all('td', {'class':'result_text'})
         regex = [re.search('[0-9]+', result.contents[2]) for result in results[:1]][0]
         for result in results[:1]: year = int(result.contents[2][regex.span()[0]:regex.span()[1]])
         titles = [item.a.contents[0] for item in results]
@@ -220,7 +238,7 @@ def delete(game_id):
     flash('Game #{} has been permenantly deleted'.format(game_id))
     return redirect(url_for('play_game'))
 
-@app.route('/my_scores/')
+@app.route('/my_scores')
 @login_required
 def view_my_scores():
     games = Game.query.filter_by(username=current_user.username).all()
