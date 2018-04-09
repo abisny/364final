@@ -52,22 +52,18 @@ def get_or_create_movie_year(title, release_year):
 #          "list" of guesses attached to game (all if guess hasn't already been made)
 def increment_score(game_id, guess):
     game = Game.query.filter_by(id=game_id).first()
-    if not game: return 3
     if guess not in game.guesses.split(';'):
         game.current_score+=1
         game.guesses += (';' + guess)
-        return 1
-    return 2
+        return False
+    else return True
 
-# REQUIRES: player and guess are strings, correct either an integer or None
-# MODIFIES: db table games
-# EFFECTS: adds a new game to the db table games with given player name;
-#          increments score if correct guess
-def create_game(player, correct, guess):
+def get_or_create_game(player):
+    game = Game.query.filter_by(username=player).first()
+    if game: return game
     game = Game(player=player, current_score=0, guesses='')
     db.session.add(game)
     db.session.commit()
-    if correct: increment_score(game.id, guess)
     return game
 
 
@@ -76,7 +72,7 @@ def create_game(player, correct, guess):
 ##################
 
 # ASSOCIATION TABLE: many-to-many relationship between games and movies
-guessed_movies = db.Table('guessed_movies',  db.Column('game_id', db.Integer,  db.ForeignKey('games.id')), db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
+guessed_movies = db.Table('guessed_movies',  db.Column('game_id', db.Integer, db.ForeignKey('games.id')), db.Column('movie_title', db.String,  db.ForeignKey('movies.title')))
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -92,7 +88,7 @@ class User(UserMixin, db.Model):
     def password(self, password):
         self.password_hash = generate_password_hash(password)
     def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password_hash,  password)
 
 class Movie(db.Model):
     __tablename__ = "movies"
@@ -138,7 +134,7 @@ class MovieForm(FlaskForm):
 
 class GameForm(FlaskForm):
     game_id = StringField("Enter the ID number for the game you want to continue.")
-    player = StringField("Enter your name.")
+    player = StringField("Enter your username.")
     guess = StringField("Guess a top 250 movie title here.", validators=[Required()])
     submit = SubmitField()
 
@@ -205,30 +201,23 @@ def register():
     return render_template('movie_form.html', form=form)
 
 @app.route('/play_game', methods=['GET', 'POST'])
-@login_required
 def play_game():
-    game_choice = 1
-    if request.args: game_choice = int(request.args['game'])
+    if not current_user:
+        flash('You need to log in to play the game.')
+        return redirect(url_for('login'))
     game_form = GameForm()
     if game_form.validate_on_submit():
-        # Setup
         ia = IMDb()
         top_250 = [str(item) for item in ia.get_top250_movies()]
         rank = None
         already_guessed = False
-        # check if guess was correct (stored in rank)
         for i in range(0, 250):
             if game_form.guess.data == top_250[i]: rank = i + 1
-        # update game_choice and create game/increment score where appropriate
-        if game_form.game_id.data: game_choice = 2
-        if game_choice == 1:
-            game = create_game(player=game_form.player.data, correct=rank, guess=game_form.guess.data)
-        elif rank and increment_score(game_id=int(game_form.game_id.data), guess=game_form.guess.data) == 2:
-            already_guessed = True
-        elif increment_score(game_id=int(game_form.game_id.data), guess=game_form.guess.data) == 3:
-            return render_template('no_game.html')
+        game = get_or_create_game(player=game_form.player.data)
+        already_guessed = increment_score(game_id=int(game.id), guess=game_form.guess.data)
         db.session.commit()
-        return render_template('game_result.html', rank=rank, already_guessed=already_guessed)
+        guesses = [str(guess) for guess in game.guesses.split(';')][1:]
+        return render_template('game_info.html', game=game, guesses=guesses, rank=rank, already_guessed=already_guessed)
     return render_template('game.html', form=game_form, game_choice=game_choice)
 
 @app.route('/delete/<game_id>')

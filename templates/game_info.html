@@ -1,5 +1,14 @@
 {% block content %}
 
+{% if already_guessed %}
+  <h2><b>You already guessed that one..</b></h2>
+{% endif %}
+
+{% if not rank %}
+  <h2><b>Sorry :(</b></h2>
+  <h5><p>Your guess was not in IMDb's top 250!</p></h5>
+{% endif %}
+
 <h3>Information for Game #{{ game.id }}</h3>
 <p><b>Player: {{ game.player }}</b></p>
 <p>Current Score: {{ game.current_score }}</p>

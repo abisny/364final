@@ -4,12 +4,6 @@
 <p>Enter a movie title you think would be in IMDb's top 250 and see if you can guess all of them...<br>
 or click <a href='/scores'>here</a> to see your top scores!</p>
 
-<form action="{{ url_for('play_game') }}" method='GET'>
-  <input type='radio' name='game' value=1> Start a new game.<br>
-  <input type='radio' name='game' value=2> Continue previous game.<br>
-  <input type='submit' onsubmit='return showResults()' value='Submit'><br>
-</form>
-
 <form action="{{ url_for('play_game') }}" method='POST'>
   {% if game_choice == 1 %}
     {{ form.player.label() }}{{ form.player() }}<br>
