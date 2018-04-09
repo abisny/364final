@@ -1,0 +1,15 @@
+{% block index %}
+
+<hr>
+<h4>Index</h4>
+<ul>
+  <li><a href='/'>Home</a></li>
+  {% if home %}
+    <li><a href='/login'>Account</a></li>
+    <li><a href='/logout'>Log Out</a></li>
+  {% endif %}
+  <li><a href='/play_game'>Play Game</a></li>
+  <li><a href='/scores'>Scores</a></li>
+</ul>
+
+{% endblock %}

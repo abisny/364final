@@ -1,0 +1,23 @@
+{% block content %}
+
+{% if rank and not already_guessed %}
+  <h2><b>Great job!</b></h2>
+  <h4><p>You guessed movie number {{ rank }} on IMDb's top 250 list</p></h4>
+{% endif %}
+
+{% if already_guessed %}
+  <h2><b>You already guessed that one..</b></h2>
+{% endif %}
+
+{% if not rank %}
+  <h2><b>Sorry :(</b></h2>
+  <h5><p>Your guess was not in IMDb's top 250!</p></h5>
+{% endif %}
+
+
+<p><li>Click <a href='/play_game'>here</a> to guess again!</li><br>
+<li>Click <a href='/scores'>here</a> to see your top scores</li></p>
+
+{% endblock %}
+
+{% extends 'base.html' %}

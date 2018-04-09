@@ -1,0 +1,12 @@
+{% block content %}
+
+<h3>High Scores</h3>
+<ol>
+  {% for game in sorted_games %}
+    <li>{{ game }}</li>
+  {% endfor %}
+</ol>
+
+{% endblock %}
+
+{% extends 'base.html' %}

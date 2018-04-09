@@ -1,0 +1,8 @@
+initial_project_idea.txt
+
+Abigail Snyder
+SI 364: HW 6- Final Project Plan
+April 11, 2018
+
+	I will be building on my application from the midterm exam for this final project. For the midterm, I created an app that used the IMDb API to create a movie "guessing game." The game asks the player to guess movie titles that would be in IMDb's top 50 list. A database table "Games" stores data for each game (player name, score, guessed titles), and the user could continue an old game by entering the ID number of that game. I will re-create this game with new features. The user will now have to log in/register in order to see the games associated with their user account (the player name will thus become a username). Each old game will be able to be continued with use of as "update" button, and can also be deleted. There will be a "top scores" page that shows the top 10 scores across all users, and this can be viewed without a user account.
+	I will also add a "social media" section to the app in which the user can search for a movie not only on IMDb, but also on Twitter. The user will be able to easily access their previously searched for movies and their search results without having to search again.

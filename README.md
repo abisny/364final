@@ -4,54 +4,7 @@
 
 **Total: 3200 points**
 
-Late assignment policy does NOT apply; late projects are not accepted. If you have a concern about deadlines and dates please let Jackie and an advisor in OSA know immediately.
-
-*Unless you have otherwise spoken with Jackie, you must submit the HW6 Project Plan before submitting your final project.*
-
-## Overall
-
-**You do NOT need to fork or clone this, and should not -- only the instructions live here.**
-
-**YOU SHOULD READ THIS ENTIRE SET OF INSTRUCTIONS CAREFULLY BEFORE BEGINNING YOUR WORK.**
-
-In this final project assignment, your goal is to build on provided code to build a complete working interactive application, using the material you have learned in this class. Requirements are listed below.
-
-## Info on collaboration (none) and work on this assignment
-
-Unlike most HW in this class, you should not share any code you are working on for this assignment. It should be your own work. You may talk generally about concepts ("where's some good documentation for WTForms", "I'm getting this error, what do you suggest I try to do?") but nothing specific (like "can you look at my code and help talk me through it" -- that's great for HW, but not for the final project).
-
-By submitting the assignment you are asserting that you completed this project with academic integrity and did not share your code with others.
-
-You may, of course, talk with any instructors, post (without showing your code) on Piazza (we will monitor and edit any question with too much information in it), and use the internet, any resources from HW, section, or lecture, textbook, readings, etc.
-
-If you use any code from the internet or directly from class, you must cite it. **You CANNOT fulfill** ***creative*** **requirements for this assignment (e.g. defining a complete view function) with any code that comes from lecture, section, the internet, a friend, or a previous assignment,** although if you include it AND cite it (see syllabus for how to cite code in a comment), that's completely OK, it just won't count for points.
-
-(Setup code, like `app.config` settings, or the code to make user authentication work, is always approximately the same and will not vary much from one person to another, if it all. You do not have to cite that, but you do need to make sure you have what you need and that it works correctly!)
-
-## Instructions and overall requirements
-
-We have *not* provided any setup code for the final project (though in HW6, you will be working on some!). You will be building this project completely from scratch (with the basis of all you've already practiced and learned in SI 364, etc).
-
-You will push all of your work (making sure not to *publicly* share your API keys) to a private repository on GitHub and share that repository with all three of us instructors.
-Note that some requirements are dependent upon another one being completed successfully, as in all applications!
-
-This final project assignment may be of any theme or any subject you want, and involve any data (*as long as it is appropriate to share with our whole class, and does not include any discriminatory content* -- penalty may vary if this is the case. Please avoid it).
-
-You may *not* earn any points for making a request to the iTunes API since we have used it so many times in class.
-
-You may use any code that is exactly the same as code used in lecture or section or a previous HW.
-
-You will NOT receive points for any code that you submitted for the midterm. **Keep this in mind if you plan to use a similar theme in this project as you used on the midterm.** Small amendments to it, additions, etc, if it was your own original work on the midterm, are fine and will count.
-
-*It is not enough to decide that the app you want to write does not have "that type of feature required" -- the final project assignment requires fulfilling all of these things for the credit that goes with them, so make your plan accordingly.*
-
-Reading code you have been given already, written already, and looking at examples from lecture, section, and past HW is one of the *best* ways to approach this. While you can't use the code directly, it can answer a lot of possible questions and provide great examples!
-Visual design will not earn you points for this assignment though you may certainly include it if you want -- do *not* prioritize it over the functionality, which is what this final project assignment is about.
-
-
 ## Requirements to complete for 2880 points (90%) -- an awesome, solid app
-
-*(I recommend treating this as a checklist and checking things off as you get them done!)*
 
 ### **Documentation README Requirements**
 
@@ -68,13 +21,12 @@ Visual design will not earn you points for this assignment though you may certai
 - [ ] The `README.md` file should include a list of all of the routes that exist in the app and the names of the templates each one should render OR, if a route does not render a template, what it returns (e.g. `/form` -> `form.html`, like [the list we provided in the instructions for HW2](https://www.dropbox.com/s/3a83ykoz79tqn8r/Screenshot%202018-02-15%2013.27.52.png?dl=0) and like you had to on the midterm, or `/delete -> deletes a song and redirects to index page`, etc).
 
 ### **Code Requirements**
-***Note that many of these requirements of things your application must DO or must INCLUDE go together! Note also that*** ***you should read all of the requirements before making your application plan******.***
 
-- [ ] Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). **Your main file must be called** `SI364final.py`**, but of course you may include other files if you need.**
+- **[o] Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). **Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
 
-- [ ] A user should be able to load `http://localhost:5000` and see the first page they ought to see on the application.
+- **[o] A user should be able to load `http://localhost:5000` and see the first page they ought to see on the application.**
 
-- [ ] Include navigation in `base.html` with links (using `a href` tags) that lead to every other page in the application that a user should be able to click on. (e.g. in the lecture examples from the Feb 9 lecture, [like this](https://www.dropbox.com/s/hjcls4cfdkqwy84/Screenshot%202018-02-15%2013.26.32.png?dl=0) )
+- **[ ] Include navigation in `base.html` with links (using `a href` tags) that lead to every other page in the application that a user should be able to click on. (e.g. in the lecture examples from the Feb 9 lecture, [like this](https://www.dropbox.com/s/hjcls4cfdkqwy84/Screenshot%202018-02-15%2013.26.32.png?dl=0) )**
 
 - [ ] Ensure that all templates in the application inherit (using template inheritance, with `extends`) from `base.html` and include at least one additional `block`.
 
@@ -100,9 +52,9 @@ Visual design will not earn you points for this assignment though you may certai
 
 - [ ] At least two `get_or_create` functions should be defined and invoked in the application (such that information can be saved without being duplicated / encountering errors).
 
-- [ ] At least one error handler for a 404 error and a corresponding template.
+- **[ ] At least one error handler for a 404 error and a corresponding template.**
 
-- [ ] At least one error handler for any other error (pick one -- 500? 403?) and a corresponding template.
+- **[ ] At least one error handler for any other error (pick one -- 500? 403?) and a corresponding template.**
 
 - [ ] Include at least 4 template `.html` files in addition to the error handling template files.
 

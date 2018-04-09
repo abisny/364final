@@ -1,0 +1,18 @@
+{% block content %}
+
+<h3>Information for Game #{{ game.id }}</h3>
+<p><b>Player: {{ game.player }}</b></p>
+<p>Current Score: {{ game.current_score }}</p>
+
+{% for title in guesses %}
+  <form action='' method='GET'>
+    <li><i>{{ title }}</i></li><input type='submit' value='Delete'><br>
+  </form>
+{% endfor %}
+
+<br>
+Great! You only have {{ to_go }} more titles to guess!
+
+{% endblock %}
+
+{% extends 'base.html' %}
