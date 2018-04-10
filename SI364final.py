@@ -188,6 +188,7 @@ def register():
 
 @app.route('/movie_search', methods=['GET', 'POST'])
 @login_required
+def movie_search():
     form = MovieForm()
     if form.validate_on_submit():
         r = requests.get('http://www.imdb.com/find?q=' + form.title.data + '&s=all')
