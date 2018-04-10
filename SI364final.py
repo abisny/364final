@@ -95,6 +95,7 @@ class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64))
     release_year = db.Column(db.Integer,  db.ForeignKey('years.name'))
+    rank = db.Column(db.Integer)
     def __repr__(self):
         return "{}, {} (ID: {})".format(self.title, self.release_year, self.id)
 
@@ -214,10 +215,10 @@ def play_game():
         for i in range(0, 250):
             if game_form.guess.data == top_250[i]: rank = i + 1
         game = get_or_create_game(player=game_form.player.data)
-        already_guessed = increment_score(game_id=int(game.id), guess=game_form.guess.data)
+        if rank: already_guessed = increment_score(game_id=int(game.id), guess=game_form.guess.data)
         db.session.commit()
         guesses = [str(guess) for guess in game.guesses.split(';')][1:]
-        return render_template('game_info.html', game=game, guesses=guesses, rank=rank, already_guessed=already_guessed)
+        return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed)
     return render_template('game.html', form=game_form, game_choice=game_choice)
 
 @app.route('/delete/<game_id>')
@@ -245,7 +246,7 @@ def view_scores():
 def display_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
     guesses = [str(guess) for guess in game.guesses.split(';')][1:]
-    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses))
+    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=True, already_guessed=False)
 
 ## Code to run the application...
 if __name__ == '__main__':
