@@ -95,6 +95,12 @@ def increment_score(game_id, guess):
         return False
     else: return True
 
+def check_current_user():
+    logged_in = False
+    user = User.query.filter_by(id=current_user.id)
+    if user: logged_in = True
+    return logged_in
+
 
 ##################
 ##### MODELS #####
@@ -204,10 +210,7 @@ def internal_server_error(e):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    logged_in = False
-    user = User.query.filter_by(id=current_user.id)
-    if user: logged_in = True
-    return render_template('base.html', logged_in=logged_in)
+    return render_template('base.html', logged_in=check_current_user())
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -218,7 +221,7 @@ def login():
             login_user(user, form.remember_me.data)
             return redirect(url_for('home'))
         flash('Invalid username or password.')
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, logged_in=check_current_user())
 
 @app.route('/logout')
 @login_required
@@ -235,7 +238,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, logged_in=check_current_user())
 
 @app.route('/movie_search', methods=['GET', 'POST'])
 @login_required
@@ -252,16 +255,16 @@ def movie_search():
         create_movie_and_year(title=titles[0], release_year=year)
         return redirect(url_for('all_movies'))
     elif 'title' in form.errors: flash(form.errors['title'][0])
-    return render_template('movie_form.html', form=form)
+    return render_template('movie_form.html', form=form, logged_in=check_current_user())
 
 @app.route('/all_movies', methods=['GET', 'POST'])
 def all_movies():
-    return render_template('all_movies.html', movies=Movie.query.all())
+    return render_template('all_movies.html', movies=Movie.query.all(), logged_in=check_current_user())
 
 @app.route('/movie/<title>', methods=['GET', 'POST'])
 def display_movie(title):
     movie = Movie.query.filter_by(title=title).first()
-    return render_template('movie_info.html', movie=movie)
+    return render_template('movie_info.html', movie=movie, logged_in=check_current_user())
 
 @app.route('/delete_movies', methods=['GET', 'POST'])
 def delete_movies():
@@ -287,8 +290,8 @@ def play_game():
         if rank: already_guessed = increment_score(game_id=int(game.id), guess=game_form.guess.data)
         db.session.commit()
         guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
-        return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed)
-    return render_template('game.html', form=game_form)
+        return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=check_current_user())
+    return render_template('game.html', form=game_form, logged_in=check_current_user())
 
 @app.route('/delete/<game_id>', methods=['GET', 'POST'])
 @login_required
@@ -302,21 +305,21 @@ def delete(game_id):
 @login_required
 def view_my_scores():
     games = Game.query.filter_by(username=current_user.username).all()
-    return render_template('my_games.html', games=games)
+    return render_template('my_games.html', games=games, logged_in=check_current_user())
 
 @app.route('/top_scores', methods=['GET', 'POST'])
 def view_scores():
     def current_score(game):
         return game.current_score
     sorted_games = sorted(Game.query.all(), key=current_score, reverse=True)[:10]
-    return render_template('top_scores.html', sorted_games=sorted_games)
+    return render_template('top_scores.html', sorted_games=sorted_games, logged_in=check_current_user())
 
 @app.route('/display_game/<game_id>', methods=['GET', 'POST'])
 @login_required
 def display_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
     guesses = [str(guess) for guess in game.guesses.split(';')][1:]
-    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=True, already_guessed=False)
+    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=True, already_guessed=False, logged_in=check_current_user())
 
 ## Code to run the application...
 if __name__ == '__main__':

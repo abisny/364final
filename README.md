@@ -7,10 +7,10 @@
 ## Requirements to complete for 2880 points (90%) -- an awesome, solid app
 
 ### Installations
-- Please install the IMDb Python API with the command '''pip install imdbpy''' in your terminal
+- Please install the IMDb Python API with the command `pip install imdbpy` in your terminal
 
 ### App Description
-This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from IMDb and Twitter. IMDb supplies the year it was released, and the
+This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from IMDb and Twitter. IMDb supplies the year the movie in question was released, and the Twitter API supplies tweets regarding that film, to include a "popular" review of the movie.
 
 ### **Documentation README Requirements**
 
