@@ -21,7 +21,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 
 # Flask Login
-from flask_login import LoginManager, login_required, logout_user, login_user, UserMixin, current_user
+from flask_login import LoginManager, login_required, logout_user, login_user, UserMixin, AnonymousUserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -56,52 +56,6 @@ def make_shell_context():
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
 
-######################################
-######## HELPER FXNS (If any) ########
-######################################
-
-# REQUIRES: title is a string, release_year is an int
-# MODIFIES: db tables movies, years
-# EFFECTS: adds release_year to Years if not there, adds movie to Movies if
-#          not there (with foreign key release_year)
-def create_movie_and_year(title, release_year):
-    if not Year.query.filter_by(name=release_year).first():
-        db.session.add(Year(name=release_year))
-    if not Movie.query.filter_by(title=title, release_year=release_year).first():
-        db.session.add(Movie(title=title, release_year=release_year))
-    db.session.commit()
-
-# REQUIRES: player_name is a string
-# MODIFIES: Games table
-# EFFECTS: if a game by player exists, returns that game; else, creates a new one
-#           to be returned
-def get_or_create_game(username):
-    game = Game.query.filter_by(player=username).first()
-    if game: return game
-    game = Game(player=username, current_score=0, guesses_str="")
-    db.session.add(game)
-    db.session.commit()
-    return game
-
-# REQUIRES: valid game_id, guess is a string
-# MODIFIES: row for given game_id in table games
-# EFFECTS: increments score for game at game_id by one and adds the guess to the
-#          "list" of guesses attached to game (all if guess hasn't already been made)
-def increment_score(game_id, guess):
-    game = Game.query.filter_by(id=game_id).first()
-    if guess not in game.guesses_str.split(';'):
-        game.current_score+=1
-        game.guesses_str += ';' + guess
-        return False
-    else: return True
-
-def check_current_user():
-    logged_in = False
-    user = User.query.filter_by(id=current_user.id)
-    if user: logged_in = True
-    return logged_in
-
-
 ##################
 ##### MODELS #####
 ##################
@@ -111,11 +65,10 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, index=True)
     password_hash = db.Column(db.String(128))
-    # one-to-many relationship between a user and their games
-    games = db.relationship('Game', backref='User')
+    games = db.relationship('Game', backref='User') # one-to-many relationship between a user and its games
     @property
     def password(self):
-        raise AttributeError('password is not a readable attribute')
+        raise AttributeError('Password is not a readable attribute')
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -144,7 +97,7 @@ class Year(db.Model):
     __tablename__ = "years"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Integer, unique=True)
-    movies = db.relationship('Movie', backref='Year')
+    movies = db.relationship('Movie', backref='Year')   # one-to-many relationship between a year and its movies
     def __repr__(self):
         return "{} (ID: {})".format(self.name, self.id)
 
@@ -166,7 +119,6 @@ class Game(db.Model):
 class LoginForm(FlaskForm):
     username = StringField("Username.", validators=[Required()])
     password = PasswordField('Password', validators=[Required()])
-    remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log In')
 
 class RegistrationForm(FlaskForm):
@@ -194,6 +146,62 @@ class GameForm(FlaskForm):
     submit = SubmitField()
 
 
+######################################
+############ HELPER FXNS #############
+######################################
+
+# MODIFIES: db table movies
+# EFFECTS: scrapes IMDb page to get release_year of searched movie and adds movie and
+#          corresponding year to database; returns movie
+def imdb_get_movie(title, rank=None):
+    r = requests.get('http://www.imdb.com/find?q=' + title + '&s=all')
+    soup = BeautifulSoup(r.content, 'html.parser')
+    results = soup.find_all('td', {'class':'result_text'})
+    regex = [re.search('[0-9]+', result.contents[2]) for result in results[:1]][0]
+    for result in results[:1]: year = int(result.contents[2][regex.span()[0]:regex.span()[1]])
+    titles = [item.a.contents[0] for item in results]
+    movie = Movie.query.filter_by(title=titles[0], release_year=year).first()
+    if movie: return movie
+    else: return create_movie_and_year(title=titles[0], release_year=year, rank=rank)
+
+# REQUIRES: title is a string, release_year is an int
+# MODIFIES: db tables movies, years
+# EFFECTS: adds release_year to Years if not there, adds movie to Movies if
+#          not there (with foreign key release_year)
+def create_movie_and_year(title, release_year, rank=None):
+    if not Year.query.filter_by(name=release_year).first():
+        db.session.add(Year(name=release_year))
+    movie = Movie(title=title, release_year=release_year, rank=rank)
+    db.session.add(movie)
+    db.session.commit()
+    return movie
+
+# REQUIRES: username is a string and corresponds to a valid User
+# MODIFIES: Games table
+# EFFECTS: if a game by player exists, returns that game; else, creates a new one
+#          to be returned
+def get_or_create_game(username):
+    game = Game.query.filter_by(player=username).first()
+    if game: return game
+    game = Game(player=username, current_score=0, guesses_str="")
+    db.session.add(game)
+    db.session.commit()
+    return game
+
+# REQUIRES: valid game_id, guess is a string
+# MODIFIES: row for given game_id in table games
+# EFFECTS: increments score for game at game_id by one and adds the guess to the
+#          "list" of guesses attached to game (all if guess hasn't already been made)
+def increment_score(game, guess, movie):
+    if guess not in game.guesses_str.split(';'):
+        game.current_score += 1
+        game.guesses_str += ';' + guess
+        game.guesses.append(movie)
+        db.session.commit()
+        return False
+    return True
+
+
 #######################
 ###### VIEW FXNS ######
 #######################
@@ -210,7 +218,7 @@ def internal_server_error(e):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('base.html', logged_in=check_current_user())
+    return render_template('base.html', logged_in=current_user.is_authenticated)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -218,10 +226,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is not None and user.verify_password(form.password.data):
-            login_user(user, form.remember_me.data)
+            login_user(user)
             return redirect(url_for('home'))
         flash('Invalid username or password.')
-    return render_template('login.html', form=form, logged_in=check_current_user())
+    return render_template('login.html', form=form, logged_in=current_user.is_authenticated)
 
 @app.route('/logout')
 @login_required
@@ -238,33 +246,25 @@ def register():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
-    return render_template('register.html', form=form, logged_in=check_current_user())
+    return render_template('register.html', form=form, logged_in=current_user.is_authenticated)
 
 @app.route('/movie_search', methods=['GET', 'POST'])
-@login_required
 def movie_search():
     form = MovieForm()
     if form.validate_on_submit():
-        r = requests.get('http://www.imdb.com/find?q=' + form.title.data + '&s=all')
-        soup = BeautifulSoup(r.content, 'html.parser')
-        results = soup.find_all('td', {'class':'result_text'})
-        regex = [re.search('[0-9]+', result.contents[2]) for result in results[:1]][0]
-        for result in results[:1]: year = int(result.contents[2][regex.span()[0]:regex.span()[1]])
-        titles = [item.a.contents[0] for item in results]
-        print('about to call create function')
-        create_movie_and_year(title=titles[0], release_year=year)
-        return redirect(url_for('all_movies'))
+        movie = imdb_get_movie(title=form.title.data)
+        return redirect(url_for('display_movie', title=movie.title))
     elif 'title' in form.errors: flash(form.errors['title'][0])
-    return render_template('movie_form.html', form=form, logged_in=check_current_user())
+    return render_template('movie_form.html', form=form, logged_in=current_user.is_authenticated)
 
 @app.route('/all_movies', methods=['GET', 'POST'])
 def all_movies():
-    return render_template('all_movies.html', movies=Movie.query.all(), logged_in=check_current_user())
+    return render_template('all_movies.html', movies=Movie.query.all(), logged_in=current_user.is_authenticated)
 
 @app.route('/movie/<title>', methods=['GET', 'POST'])
 def display_movie(title):
     movie = Movie.query.filter_by(title=title).first()
-    return render_template('movie_info.html', movie=movie, logged_in=check_current_user())
+    return render_template('movie_info.html', movie=movie, logged_in=current_user.is_authenticated)
 
 @app.route('/delete_movies', methods=['GET', 'POST'])
 def delete_movies():
@@ -285,13 +285,15 @@ def play_game():
         already_guessed = False
         for i in range(0, 250):
             if game_form.guess.data == top_250[i]: rank = i + 1
-        player = User.query.filter_by(id=current_user.id).first().username
-        game = get_or_create_game(username=player)
-        if rank: already_guessed = increment_score(game_id=int(game.id), guess=game_form.guess.data)
+        username = User.query.filter_by(id=current_user.id).first().username
+        game = get_or_create_game(username=username)
+        if rank:
+            movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
+            already_guessed = increment_score(game=game, guess=game_form.guess.data, movie=movie)
         db.session.commit()
         guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
-        return render_template('game_result.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=check_current_user())
-    return render_template('game.html', form=game_form, logged_in=check_current_user())
+        return render_template('game_result.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
+    return render_template('game.html', form=game_form, logged_in=current_user.is_authenticated)
 
 @app.route('/delete/<game_id>', methods=['GET', 'POST'])
 @login_required
@@ -306,21 +308,21 @@ def delete(game_id):
 def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
-    return render_template('my_games.html', games=games, logged_in=check_current_user())
+    return render_template('my_games.html', games=games, logged_in=current_user.is_authenticated)
 
 @app.route('/top_scores', methods=['GET', 'POST'])
 def view_scores():
     def current_score(game):
         return game.current_score
     sorted_games = sorted(Game.query.all(), key=current_score, reverse=True)[:10]
-    return render_template('top_scores.html', sorted_games=sorted_games, logged_in=check_current_user())
+    return render_template('top_scores.html', sorted_games=sorted_games, logged_in=current_user.is_authenticated)
 
 @app.route('/display_game/<game_id>', methods=['GET', 'POST'])
 @login_required
 def display_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
     guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
-    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), logged_in=check_current_user())
+    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), logged_in=current_user.is_authenticated)
 
 ## Code to run the application...
 if __name__ == '__main__':

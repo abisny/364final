@@ -7,9 +7,12 @@
   {% if not logged_in %}
     <li><a href='/login'>Log In or Register</a></li>
   {% endif %}
-  <li><a href='/movie_search'>Search for a Movie</a></li>
   {% if logged_in %}
     <li><a href='/logout'>Log Out</a></li>
+  {% endif %}
+  <li><a href='/movie_search'>Search for a Movie</a></li>
+  {% if logged_in %}
+    <li><a href='/all_movies'>Search History</a></li>
     <li><a href='/play_game'>Play Game</a></li>
     <li><a href='/my_scores'>My Scores</a></li>
   {% endif %}

@@ -10,7 +10,7 @@
 - Please install the IMDb Python API with the command `pip install imdbpy` in your terminal
 
 ### App Description
-This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from IMDb and Twitter. IMDb supplies the year the movie in question was released, and the Twitter API supplies tweets regarding that film, to include a "popular" review of the movie.
+This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from both IMDb and Twitter (I used the IMDb and Twitter API's in addition to Beautiful Soup to scrape some of IMDb's actual website). IMDb supplies the year the movie in question was released, and the Twitter API supplies tweets regarding that film, to include a "popular" review of the movie. If the user creates an account and/or logs in, they can play a game based on IMDb's top 250 movie list, which I have secured via the IMDb API. The user attempts to guess any/all of the 250 movies in question, and the game is then saved to their account. A user is only allowed to continue games they have created, though they can view the top scores, which includes a list of the top 10 scoring games out of all games (by any user).
 
 ### **Documentation README Requirements**
 
