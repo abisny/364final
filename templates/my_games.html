@@ -3,8 +3,8 @@
 <h3>My Games</h3>
 {% if games %}
   {% for game in games %}
-  <form action="/display_game/{{ game.id }}" method='GET'>
-    <li>{{ game }} <input type='submit' value='View Details'></li>
+  <form action="/play_game/{{ game.id }}" method='GET'>
+    <li><a href='/display_game/{{ game.id }}'>{{ game }}</a> <input type='submit' value='Contine'></li>
   </form>
   {% endfor %}
   <br><a href='/play_game'>Play Again</a>
@@ -12,7 +12,7 @@
 
 {% if not games %}
   <p>There are currently no games to display.</p>
-  <br><a href='/play_game'>New Game</a>
+  <br><a href='/play_game/{{ new_game.id }}'>New Game</a>
 {% endif %}
 
 <br><a href='/top_scores'>Top Scores</a>

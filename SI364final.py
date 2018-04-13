@@ -178,17 +178,6 @@ def create_movie_and_year(title, release_year, rank=None):
     db.session.commit()
     return movie
 
-# REQUIRES: username is a string and corresponds to a valid User
-# MODIFIES: Games table
-# EFFECTS: if a game by player exists, returns that game; else, creates a new one
-#          to be returned
-def get_or_create_game(username):
-    game = Game.query.filter_by(player=username).first()
-    if game: return game
-    game = Game(player=username, current_score=0, guesses_str="")
-    db.session.add(game)
-    db.session.commit()
-    return game
 
 # REQUIRES: valid game_id, guess is a string
 # MODIFIES: row for given game_id in table games
@@ -276,10 +265,11 @@ def delete_movies():
     flash('No search history to be shown.')
     return redirect(url_for('movie_search'))
 
-@app.route('/play_game', methods=['GET', 'POST'])
+@app.route('/play_game/<game_id>', methods=['GET', 'POST'])
 @login_required
-def play_game():
+def play_game(game_id):
     game_form = GameForm()
+    game = Game.query.filter_by(id=game_id).first()
     if game_form.validate_on_submit():
         ia = IMDb()
         top_250 = [str(item) for item in ia.get_top250_movies()]
@@ -287,8 +277,6 @@ def play_game():
         already_guessed = False
         for i in range(0, 250):
             if game_form.guess.data == top_250[i]: rank = i + 1
-        username = User.query.filter_by(id=current_user.id).first().username
-        game = get_or_create_game(username=username)
         if rank:
             movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
             already_guessed = increment_score(game=game, guess=game_form.guess.data, movie=movie)
@@ -310,7 +298,9 @@ def delete(game_id):
 def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
-    return render_template('my_games.html', games=games, logged_in=current_user.is_authenticated)
+    new_game = None
+    if not games: new_game = Game(player=username, current_score=0, guesses_str="")
+    return render_template('my_games.html', games=games, new_game=new_game, logged_in=current_user.is_authenticated)
 
 @app.route('/top_scores', methods=['GET', 'POST'])
 def view_scores():
