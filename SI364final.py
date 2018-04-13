@@ -89,7 +89,6 @@ class Movie(db.Model):
     title = db.Column(db.String(64), unique=True)
     release_year = db.Column(db.Integer,  db.ForeignKey('years.name'))
     rank = db.Column(db.Integer)
-    games = db.relationship('Game', secondary=guessed_movies, backref=db.backref('games', lazy='dynamic'), lazy='dynamic')
     def __repr__(self):
         return "{}, {} (ID: {})".format(self.title, self.release_year, self.id)
 
@@ -161,8 +160,11 @@ def imdb_get_movie(title, rank=None):
     for result in results[:1]: year = int(result.contents[2][regex.span()[0]:regex.span()[1]])
     titles = [item.a.contents[0] for item in results]
     movie = Movie.query.filter_by(title=titles[0], release_year=year).first()
-    if movie: return movie
-    else: return create_movie_and_year(title=titles[0], release_year=year, rank=rank)
+    if movie:
+        movie.rank = rank
+        return movie
+    else:
+        return create_movie_and_year(title=titles[0], release_year=year, rank=rank)
 
 # REQUIRES: title is a string, release_year is an int
 # MODIFIES: db tables movies, years
