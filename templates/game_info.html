@@ -1,13 +1,4 @@
-{% block content %}
-
-{% if already_guessed %}
-  <h2><b>You already guessed that one..</b></h2>
-{% endif %}
-
-{% if not rank %}
-  <h2><b>Sorry :(</b></h2>
-  <h5><p>Your guess was not in IMDb's top 250!</p></h5>
-{% endif %}
+{% block game_info %}
 
 <h3>Information for Game #{{ game.id }}</h3>
 <p><b>Player: {{ game.player }}</b></p>
@@ -15,12 +6,12 @@
 
 {% for title in guesses %}
   <form action='/delete/{{ game.id }}' method='GET'>
-    <li><i>{{ title }}</i></li><input type='submit' value='Delete'><br>
+    <li><i>{{ title }} </i><input type='submit' value='Delete'></li>
   </form>
 {% endfor %}
 
-<br>
-Great! You only have {{ to_go }} more titles to guess!
+<br><a href='/play_game'>Play Again</a>
+<br>Great! You only have {{ to_go }} more titles to guess!
 
 {% endblock %}
 

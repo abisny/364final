@@ -290,7 +290,7 @@ def play_game():
         if rank: already_guessed = increment_score(game_id=int(game.id), guess=game_form.guess.data)
         db.session.commit()
         guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
-        return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=check_current_user())
+        return render_template('game_result.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=check_current_user())
     return render_template('game.html', form=game_form, logged_in=check_current_user())
 
 @app.route('/delete/<game_id>', methods=['GET', 'POST'])
@@ -319,8 +319,8 @@ def view_scores():
 @login_required
 def display_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
-    guesses = [str(guess) for guess in game.guesses.split(';')][1:]
-    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=True, already_guessed=False, logged_in=check_current_user())
+    guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
+    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), logged_in=check_current_user())
 
 ## Code to run the application...
 if __name__ == '__main__':

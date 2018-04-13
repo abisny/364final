@@ -1,14 +1,21 @@
 {% block content %}
 
 <h3>My Games</h3>
-{% for game in games %}
-<form action="/display_game/{{ game.id }}" method='GET'>
-  <li>{{ game }}</li><input type='submit' value='View Details'><br>
-</form>
-{% endfor %}
+{% if games %}
+  {% for game in games %}
+  <form action="/display_game/{{ game.id }}" method='GET'>
+    <li>{{ game }} <input type='submit' value='View Details'></li>
+  </form>
+  {% endfor %}
+  <br><a href='/play_game'>Play Again</a>
+{% endif %}
 
-<br>Play again <a href='/play_game'>here</a>!!
-<li><a href='/top_scores'>Top Scores</a></li>
+{% if not games %}
+  <p>There are currently no games to display.</p>
+  <br><a href='/play_game'>New Game</a>
+{% endif %}
+
+<br><a href='/top_scores'>Top Scores</a>
 
 {% endblock %}
 
