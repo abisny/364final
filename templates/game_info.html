@@ -14,7 +14,7 @@
 <p>Current Score: {{ game.current_score }}</p>
 
 {% for title in guesses %}
-  <form action='' method='GET'>
+  <form action='/delete/{{ game.id }}' method='GET'>
     <li><i>{{ title }}</i></li><input type='submit' value='Delete'><br>
   </form>
 {% endfor %}

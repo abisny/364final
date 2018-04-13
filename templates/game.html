@@ -1,21 +1,15 @@
 {% block gameform %}
 
 <h3>Play the game!</h3>
-<p>Enter a movie title you think would be in IMDb's top 250 and see if you can guess all of them...<br>
-or click <a href='/scores'>here</a> to see your top scores!</p>
+<p>Enter a movie title you think would be in IMDb's top 250 and see if you can guess all of them...</p><br>
 
-<form action="{{ url_for('play_game') }}" method='POST'>
-  {% if game_choice == 1 %}
-    {{ form.player.label() }}{{ form.player() }}<br>
-  {% endif %}
-  {% if game_choice == 2 %}
-    {{ form.game_id.label() }}{{ form.game_id() }}<br>
-  {% endif %}
-
+<form action="" method='POST'>
   {{ form.guess.label() }}{{ form.guess() }}
   {{ form.submit() }}
   {{ form.hidden_tag() }}
 </form>
+
+<li><a href='/my_scores'>My Scores</a></li>
 
 {% endblock %}
 

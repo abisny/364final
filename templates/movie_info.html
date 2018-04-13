@@ -1,0 +1,14 @@
+{% block content %}
+
+<h3>Information for Movie</h3> (ID #{{ movie.id }})
+
+<br> IMDb DATA
+<br> TWITTER DATA
+
+<form action='/delete_movies' method='GET'>
+  <input type='submit' value='Clear Search History'>
+</form>
+
+{% endblock %}
+
+{% extends 'base.html' %}
