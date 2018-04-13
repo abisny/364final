@@ -2,7 +2,7 @@
 
 <h3>My Games</h3>
 {% for game in games %}
-<form action="{{ /display_game/{{ game.id }} }}" method='GET'>
+<form action="/display_game/{{ game.id }}" method='GET'>
   <li>{{ game }}</li><input type='submit' value='View Details'><br>
 </form>
 {% endfor %}

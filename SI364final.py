@@ -304,7 +304,8 @@ def delete(game_id):
 @app.route('/my_scores', methods=['GET', 'POST'])
 @login_required
 def view_my_scores():
-    games = Game.query.filter_by(username=current_user.username).all()
+    username = User.query.filter_by(id=current_user.id).first().username
+    games = Game.query.filter_by(player=username).all()
     return render_template('my_games.html', games=games, logged_in=check_current_user())
 
 @app.route('/top_scores', methods=['GET', 'POST'])
