@@ -142,6 +142,14 @@ class MovieForm(FlaskForm):
 class GameForm(FlaskForm):
     guess = StringField("Guess a top 250 movie title here.", validators=[Required()])
     submit = SubmitField()
+    def validate_guess(self, field):
+        ia = IMDb()
+        r = requests.get('http://www.imdb.com/find?q=' + field.data + '&s=all')
+        soup = BeautifulSoup(r.content, 'html.parser')
+        results = soup.find_all('td',{'class':'result_text'})
+        titles = [item.a.contents[0] for item in results]
+        if titles[0] != field.data:
+            raise ValidationError("The title you entered was not found in the IMDb database. Check spelling and try again.")
 
 
 ######################################

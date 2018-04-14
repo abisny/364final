@@ -20,7 +20,7 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 
 ### **Code Requirements**
 
-- **Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). **Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
+- **Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
 
 - **A user should be able to load `http://localhost:5000` and see the first page they ought to see on the application.**
 
@@ -70,7 +70,8 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 
 - **At least two custom validators for a field in a WTForm, NOT counting the custom validators included in the log in/auth code.**
 
-- **Include at least one way to *update* items saved in the database in the application (like in HW5).**
+- **Include at least one way to *update* items saved in the database in the application (like in HW5).
+NOTE: THIS WAS DONE IN THAT YOU CAN 'CONTINUE' AN OLD GAME. I DO NOT EXPLICITLY USE THE WORD UPDATE, BUT THE BUTTON THAT SAYS CONTINUE CARRIES OUT THE 'UPDATE' CONCEPT, AS THE USER IS UPDATING THE LIST OF GUESSED MOVIES WHEN THEY CONTINUE A GAME.**
 
 - **Include at least one way to *delete* items saved in the database in the application (also like in HW5).**
 
