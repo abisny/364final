@@ -9,7 +9,7 @@
   {% endfor %}
 {% endif %}
 
-{% if not games %}
+{% if new_game %}
   <p>There are currently no games to display.</p>
   <br><a href='/play_game/{{ new_game.id }}'>New Game</a>
 {% endif %}
