@@ -20,13 +20,13 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 
 ### **Code Requirements**
 
-- [x]**Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
+- [x] **Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
 
-- **[x] A user should be able to load `http://localhost:5000` and see the first page they ought to see on the application.**
+- [x] **A user should be able to load `http://localhost:5000` and see the first page they ought to see on the application.**
 
-- **[x] Include navigation in `base.html` with links (using `a href` tags) that lead to every other page in the application that a user should be able to click on. (e.g. in the lecture examples from the Feb 9 lecture, [like this](https://www.dropbox.com/s/hjcls4cfdkqwy84/Screenshot%202018-02-15%2013.26.32.png?dl=0) )**
+- [x] **Include navigation in `base.html` with links (using `a href` tags) that lead to every other page in the application that a user should be able to click on. (e.g. in the lecture examples from the Feb 9 lecture, [like this](https://www.dropbox.com/s/hjcls4cfdkqwy84/Screenshot%202018-02-15%2013.26.32.png?dl=0) )**
 
-- **[x] Ensure that all templates in the application inherit (using template inheritance, with `extends`) from `base.html` and include at least one additional `block`.**
+- [x] **Ensure that all templates in the application inherit (using template inheritance, with `extends`) from `base.html` and include at least one additional `block`.**
 
 - **[x] Must use user authentication (which should be based on the code you were provided to do this e.g. in HW4).**
 
