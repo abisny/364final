@@ -28,58 +28,58 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 
 - [x] **Ensure that all templates in the application inherit (using template inheritance, with `extends`) from `base.html` and include at least one additional `block`.**
 
-- **[x] Must use user authentication (which should be based on the code you were provided to do this e.g. in HW4).**
+- [x] **Must use user authentication (which should be based on the code you were provided to do this e.g. in HW4).**
 
-- **[x] Must have data associated with a user and at least 2 routes besides `logout` that can only be seen by logged-in users.**
+- [x] **Must have data associated with a user and at least 2 routes besides `logout` that can only be seen by logged-in users.**
 
-- **[x] At least 3 model classes *besides* the `User` class.**
+- [x] **At least 3 model classes *besides* the `User` class.**
 
-- **[x] At least one one:many relationship that works properly built between 2 models.**
+- [x] **At least one one:many relationship that works properly built between 2 models.**
 
-- **[x] At least one many:many relationship that works properly built between 2 models.**
+- [x] **At least one many:many relationship that works properly built between 2 models.**
 
-- **[x] Successfully save data to each table.**
+- [x] **Successfully save data to each table.**
 
-- **[x] Successfully query data from each of your models (so query at least one column, or all data, from every database table you have a model for) and use it to effect in the application (e.g. won't count if you make a query that has no effect on what you see, what is saved, or anything that happens in the app).**
+- [x] **Successfully query data from each of your models (so query at least one column, or all data, from every database table you have a model for) and use it to effect in the application (e.g. won't count if you make a query that has no effect on what you see, what is saved, or anything that happens in the app).**
 
-- **[x] At least one query of data using an `.all()` method and send the results of that query to a template.**
+- [x] **At least one query of data using an `.all()` method and send the results of that query to a template.**
 
-- **[x] At least one query of data using a `.filter_by(...` and show the results of that query directly (e.g. by sending the results to a template) or indirectly (e.g. using the results of the query to make a request to an API or save other data to a table).**
+- [x] **At least one query of data using a `.filter_by(...` and show the results of that query directly (e.g. by sending the results to a template) or indirectly (e.g. using the results of the query to make a request to an API or save other data to a table).**
 
-- **[x] At least one helper function that is *not* a `get_or_create` function should be defined and invoked in the application.**
+- [x] **At least one helper function that is *not* a `get_or_create` function should be defined and invoked in the application.**
 
 - [ ] At least two `get_or_create` functions should be defined and invoked in the application (such that information can be saved without being duplicated / encountering errors).
 
-- **[x] At least one error handler for a 404 error and a corresponding template.**
+- [x] **At least one error handler for a 404 error and a corresponding template.**
 
-- **[x] At least one error handler for any other error (pick one -- 500? 403?) and a corresponding template.**
+- [x] **At least one error handler for any other error (pick one -- 500? 403?) and a corresponding template.**
 
-- **[x] Include at least 4 template `.html` files in addition to the error handling template files.**
+- [x] **Include at least 4 template `.html` files in addition to the error handling template files.**
 
-  - **[x] At least one Jinja template for loop and at least two Jinja template conditionals should occur amongst the templates.**
+  - [x] **At least one Jinja template for loop and at least two Jinja template conditionals should occur amongst the templates.**
 
-- **[x] At least one request to a REST API that is based on data submitted in a WTForm OR data accessed in another way online (e.g. scraping with BeautifulSoup that *does* accord with other involved sites' Terms of Service, etc).**
+- [x] **At least one request to a REST API that is based on data submitted in a WTForm OR data accessed in another way online (e.g. scraping with BeautifulSoup that *does* accord with other involved sites' Terms of Service, etc).**
 
-  - **[x] Your application should use data from a REST API or other source such that the application processes the data in some way and saves some information that came from the source *to the database* (in some way).**
+  - [x] **Your application should use data from a REST API or other source such that the application processes the data in some way and saves some information that came from the source *to the database* (in some way).**
 
-- **[x] At least one WTForm that sends data with a `GET` request to a *new* page.**
+- [x] **At least one WTForm that sends data with a `GET` request to a *new* page.**
 
-- **[x] At least one WTForm that sends data with a `POST` request to the *same* page. (NOT counting the login or registration forms provided for you in class.)**
+- [x] **At least one WTForm that sends data with a `POST` request to the *same* page. (NOT counting the login or registration forms provided for you in class.)**
 
-- **[x] At least one WTForm that sends data with a `POST` request to a *new* page. (NOT counting the login or registration forms provided for you in class.)**
+- [x] **At least one WTForm that sends data with a `POST` request to a *new* page. (NOT counting the login or registration forms provided for you in class.)**
 
-- **[x] At least two custom validators for a field in a WTForm, NOT counting the custom validators included in the log in/auth code.**
+- [x] **At least two custom validators for a field in a WTForm, NOT counting the custom validators included in the log in/auth code.**
 
-- **[x] Include at least one way to *update* items saved in the database in the application (like in HW5).
+- [x] **Include at least one way to *update* items saved in the database in the application (like in HW5).
 NOTE: THIS WAS DONE IN THAT YOU CAN 'CONTINUE' AN OLD GAME. I DO NOT EXPLICITLY USE THE WORD UPDATE, BUT THE BUTTON THAT SAYS CONTINUE CARRIES OUT THE 'UPDATE' CONCEPT, AS THE USER IS UPDATING THE LIST OF GUESSED MOVIES WHEN THEY CONTINUE A GAME.**
 
-- **[x] Include at least one way to *delete* items saved in the database in the application (also like in HW5).**
+- [x] **Include at least one way to *delete* items saved in the database in the application (also like in HW5).**
 
-- **[x] Include at least one use of `redirect`.**
+- [x] **Include at least one use of `redirect`.**
 
-- **[x] Include at least two uses of `url_for`. (HINT: Likely you'll need to use this several times, really.)**
+- [x] **Include at least two uses of `url_for`. (HINT: Likely you'll need to use this several times, really.)**
 
-- **[x] Have at least 5 view functions that are not included with the code we have provided. (But you may have more! *Make sure you include ALL view functions in the app in the documentation and navigation as instructed above.*)**
+- [x] **Have at least 5 view functions that are not included with the code we have provided. (But you may have more! *Make sure you include ALL view functions in the app in the documentation and navigation as instructed above.*)**
 
 
 ## Additional Requirements for additional points -- an app with extra functionality!
