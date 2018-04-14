@@ -66,6 +66,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(255), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     games = db.relationship('Game', backref='User') # one-to-many relationship between a user and its games
+    movies = db.relationship('Movie', secondary=search_history, backref=db.backref('movies', lazy='dynamic'), lazy='dynamic')
     @property
     def password(self):
         raise AttributeError('Password is not a readable attribute')
@@ -81,6 +82,10 @@ def load_user(user_id):
 
 # ASSOCIATION TABLE: many-to-many relationship between games and movies
 guessed_movies = db.Table('guessed_movies', db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+                                            db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
+
+# ASSOCIATION TABLE: many-to-many relationship between users and movies
+search_history = db.Table('search_history', db.Column('username', db.String, db.ForeignKey('users.username')),
                                             db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
 
 class Movie(db.Model):
@@ -170,8 +175,7 @@ def imdb_get_movie(title, rank=None):
     if movie:
         movie.rank = rank
         return movie
-    else:
-        return create_movie_and_year(title=titles[0], release_year=year, rank=rank)
+    return create_movie_and_year(title=titles[0], release_year=year, rank=rank)
 
 # REQUIRES: title is a string, release_year is an int
 # MODIFIES: db tables movies, years
@@ -181,6 +185,8 @@ def create_movie_and_year(title, release_year, rank=None):
     if not Year.query.filter_by(name=release_year).first():
         db.session.add(Year(name=release_year))
     movie = Movie(title=title, release_year=release_year, rank=rank)
+    if (current_user.is_authenticated):
+        User.query.filter_by(id=current_user.id).first().movies.append(movie)
     db.session.add(movie)
     db.session.commit()
     return movie
@@ -251,14 +257,17 @@ def movie_search():
     if form.validate_on_submit():
         movie = imdb_get_movie(title=form.title.data)
         twitter_data = requests.get('https://api.twitter.com/1.1/search/tweets.json?q={}&count=5'.format(form.title.data)).text
-        # TODO: get appropriate Twitter data to display in /movie/<title> route
+        # TODO: get appropriate Twitter data to display in '/movie/<title>' route
         return redirect(url_for('display_movie', title=movie.title))
     elif 'title' in form.errors: flash(form.errors['title'][0])
     return render_template('movie_form.html', form=form, logged_in=current_user.is_authenticated)
 
 @app.route('/all_movies', methods=['GET', 'POST'])
 def all_movies():
-    return render_template('all_movies.html', movies=Movie.query.all(), logged_in=current_user.is_authenticated)
+    if current_user.is_authenticated:
+        movies = User.query.filter_by(current_user.id).first().movies
+    else: movies = []
+    return render_template('all_movies.html', movies=movies, logged_in=current_user.is_authenticated)
 
 @app.route('/movie/<title>', methods=['GET', 'POST'])
 def display_movie(title):
