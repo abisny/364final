@@ -250,6 +250,8 @@ def movie_search():
     form = MovieForm()
     if form.validate_on_submit():
         movie = imdb_get_movie(title=form.title.data)
+        twitter_data = requests.get('https://api.twitter.com/1.1/search/tweets.json?q={}&count=5'.format(form.title.data)).text
+        # TODO: get appropriate Twitter data to display in /movie/<title> route
         return redirect(url_for('display_movie', title=movie.title))
     elif 'title' in form.errors: flash(form.errors['title'][0])
     return render_template('movie_form.html', form=form, logged_in=current_user.is_authenticated)
@@ -304,6 +306,7 @@ def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
     new_game = None
+    # TODO: fix new_game; it is currently setting ID to None
     if not games: new_game = Game(player=username, current_score=0)
     return render_template('my_games.html', games=games, new_game=new_game, logged_in=current_user.is_authenticated)
 

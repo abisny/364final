@@ -48,7 +48,7 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 
 - **At least one helper function that is *not* a `get_or_create` function should be defined and invoked in the application.**
 
-- **At least two `get_or_create` functions should be defined and invoked in the application (such that information can be saved without being duplicated / encountering errors).**
+- At least two `get_or_create` functions should be defined and invoked in the application (such that information can be saved without being duplicated / encountering errors).
 
 - **At least one error handler for a 404 error and a corresponding template.**
 
