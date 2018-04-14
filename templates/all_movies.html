@@ -3,7 +3,7 @@
 <h3>Search History</h3>
 {% for movie in movies %}
   <form action="/movie/{{ movie.title }}" method='GET'>
-    <li>{{ movie }}</li><input type='submit' value='View Results'>
+    <li><i>{{ movie.title }}</i> ({{ movie.release_year }})</li><input type='submit' value='View Results'>
   </form>
 {% endfor %}
 

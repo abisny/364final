@@ -4,15 +4,15 @@
 <p><b>Player: {{ game.player }}</b></p>
 <p>Current Score: {{ game.current_score }}</p>
 
-{% for title in guesses %}
-    <li><i>{{ title }} </i>
+{% for movie in guesses %}
+    <li><i>{{ movie.title }} </i>
 {% endfor %}
 
 <form action='/delete/{{ game.id }}' method='GET'>
   <br><input type='submit' value='Delete Game'></li>
 </form>
 
-<br><a href='/play_game'>Play Again</a>
+<br><a href='/play_game/{{ game.id }}'>Play Again</a>
 <br>Great! You only have {{ to_go }} more titles to guess!
 
 {% endblock %}

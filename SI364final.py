@@ -105,7 +105,6 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player = db.Column(db.String(64), db.ForeignKey('users.username'))
     current_score = db.Column(db.Integer)
-    guesses_str = db.Column(db.String)
     guesses = db.relationship('Movie', secondary=guessed_movies, backref=db.backref('movies', lazy='dynamic'), lazy='dynamic')
     def __repr__(self):
         return "Game #{} ({}): {}".format(self.id, self.player, self.current_score)
@@ -184,9 +183,8 @@ def create_movie_and_year(title, release_year, rank=None):
 # EFFECTS: increments score for game at game_id by one and adds the guess to the
 #          "list" of guesses attached to game (all if guess hasn't already been made)
 def increment_score(game, guess, movie):
-    if guess not in game.guesses_str.split(';'):
+    if guess not in game.guesses:
         game.current_score += 1
-        game.guesses_str += ';' + guess
         game.guesses.append(movie)
         db.session.commit()
         return False
@@ -281,7 +279,7 @@ def play_game(game_id):
             movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
             already_guessed = increment_score(game=game, guess=game_form.guess.data, movie=movie)
         db.session.commit()
-        guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
+        guesses = [movie for movie in game.guesses]
         return render_template('game_result.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
     return render_template('game.html', form=game_form, logged_in=current_user.is_authenticated)
 
@@ -291,16 +289,23 @@ def delete(game_id):
     db.session.delete(Game.query.filter_by(id=game_id).first())
     db.session.commit()
     flash('Game #{} has been permenantly deleted'.format(game_id))
-    return redirect(url_for('play_game'))
+    return redirect(url_for('view_my_scores'))
 
 @app.route('/my_scores', methods=['GET', 'POST'])
 @login_required
 def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
-    new_game = None
-    if not games: new_game = Game(player=username, current_score=0, guesses_str="")
+    if not games: new_game = Game(player=username, current_score=0)
+    else: new_game = None
     return render_template('my_games.html', games=games, new_game=new_game, logged_in=current_user.is_authenticated)
+
+@app.route('/display_game/<game_id>', methods=['GET', 'POST'])
+@login_required
+def display_game(game_id):
+    game = Game.query.filter_by(id=game_id).first()
+    guesses = [movie for movie in game.guesses]
+    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), logged_in=current_user.is_authenticated)
 
 @app.route('/top_scores', methods=['GET', 'POST'])
 def view_scores():
@@ -309,12 +314,6 @@ def view_scores():
     sorted_games = sorted(Game.query.all(), key=current_score, reverse=True)[:10]
     return render_template('top_scores.html', sorted_games=sorted_games, logged_in=current_user.is_authenticated)
 
-@app.route('/display_game/<game_id>', methods=['GET', 'POST'])
-@login_required
-def display_game(game_id):
-    game = Game.query.filter_by(id=game_id).first()
-    guesses = [str(guess) for guess in game.guesses_str.split(';')][1:]
-    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), logged_in=current_user.is_authenticated)
 
 ## Code to run the application...
 if __name__ == '__main__':
