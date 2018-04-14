@@ -270,17 +270,16 @@ def play_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
     if game_form.validate_on_submit():
         ia = IMDb()
-        top_250 = [str(item) for item in ia.get_top250_movies()]
+        top_250 = [str(title) for title in ia.get_top250_movies()]
         rank = None
         already_guessed = False
         for i in range(0, 250):
-            if game_form.guess.data == top_250[i]: rank = i + 1
+            if (game_form.guess.data == top_250[i]): rank = i + 1
         if rank:
             movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
             already_guessed = increment_score(game=game, guess=game_form.guess.data, movie=movie)
         db.session.commit()
-        guesses = [movie for movie in game.guesses]
-        return render_template('game_result.html', game=game, guesses=guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
+        return render_template('game_result.html', game=game, guesses=game.guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
     return render_template('game.html', form=game_form, logged_in=current_user.is_authenticated)
 
 @app.route('/delete/<game_id>', methods=['GET', 'POST'])
@@ -291,21 +290,20 @@ def delete(game_id):
     flash('Game #{} has been permenantly deleted'.format(game_id))
     return redirect(url_for('view_my_scores'))
 
-@app.route('/my_scores', methods=['GET', 'POST'])
+@app.route('/my_games', methods=['GET', 'POST'])
 @login_required
 def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
+    new_game = None
     if not games: new_game = Game(player=username, current_score=0)
-    else: new_game = None
     return render_template('my_games.html', games=games, new_game=new_game, logged_in=current_user.is_authenticated)
 
 @app.route('/display_game/<game_id>', methods=['GET', 'POST'])
 @login_required
 def display_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
-    guesses = [movie for movie in game.guesses]
-    return render_template('game_info.html', game=game, guesses=guesses, to_go=250-len(guesses), logged_in=current_user.is_authenticated)
+    return render_template('game_info.html', game=game, guesses=game.guesses, to_go=250-len(guesses), logged_in=current_user.is_authenticated)
 
 @app.route('/top_scores', methods=['GET', 'POST'])
 def view_scores():
