@@ -20,7 +20,7 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 
 ### **Code Requirements**
 
-- **[ x ]Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
+- [x]**Ensure that your `SI364final.py` file has all the setup (`app.config` values, import statements, code to run the app if that file is run, etc) necessary to run the Flask application, and the application runs correctly on `http://localhost:5000` (and the other routes you set up). Your main file must be called `SI364final.py`, but of course you may include other files if you need.**
 
 - **[x] A user should be able to load `http://localhost:5000` and see the first page they ought to see on the application.**
 
