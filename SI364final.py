@@ -87,6 +87,7 @@ guessed_movies = db.Table('guessed_movies', db.Column('game_id', db.Integer, db.
 # ASSOCIATION TABLE: many-to-many relationship between users and movies
 search_history = db.Table('search_history', db.Column('username', db.String, db.ForeignKey('users.username')),
                                             db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
+# TODO: run a migration so that this association table will generate and the code will run
 
 class Movie(db.Model):
     __tablename__ = "movies"
