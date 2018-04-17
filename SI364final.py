@@ -259,7 +259,6 @@ def movie_search():
     form = MovieForm()
     if form.validate_on_submit():
         movie = imdb_get_movie(title=form.title.data)
-        # TODO: get appropriate Twitter data to display in '/movie/<title>' route
         return redirect(url_for('display_movie', title=movie.title))
     elif 'title' in form.errors: flash(form.errors['title'][0])
     return render_template('movie_form.html', form=form, logged_in=current_user.is_authenticated)
