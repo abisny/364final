@@ -15,15 +15,15 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 ### Routes
 `'/'` --> `base.html`
 `'/login'` --> `login.html`
-`'/logout'` --> no corresponding template
+`'/logout'` --> logs out `current_user` and redirects to `'/''`
 `'/register'` --> `register.html`
 `'/movie_search'` --> `movie_form.html`
 `'/search_history'` --> `search_history.html`
 `'/movie/<title>'` --> `movie_info.html`
-`'/delete_movies'` --> no corresponding template
+`'/delete_movies'` --> deletes all `Movie` objects and redirects to `'/movie_search'`
 `'/play_game/<game_id>'` --> `game.html` and `game_result.html`
-`'/new_game/<username>'` --> no corresponding template
-`'/delete/<game_id'` --> no corresponding template
+`'/new_game/<username>'` --> creates a new `Game` object and redirects to `'/play_game/<game_id>'`
+`'/delete/<game_id'` --> deletes `Game` object and redirects to `'/my_games'`
 `'/my_games'` --> `my_gates.html`
 `'/display_game/<game_id>'` --> `game_info.html`
 `'/top_scores'` --> `top_scores.html`
