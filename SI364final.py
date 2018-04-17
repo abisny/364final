@@ -8,6 +8,7 @@ from flask import Flask, render_template, session, redirect, url_for, flash, req
 from bs4 import BeautifulSoup
 import requests, re
 from imdb import IMDb # pip install imdbpy
+import tweepy
 import twitter_info # this needs to be filled out and in the same directory
 # consumer_key = twitter_info.consumer_key
 # consumer_secret = twitter_info.consumer_secret
@@ -82,7 +83,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(255), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     games = db.relationship('Game', backref='User') # one-to-many relationship between a user and its games
-    movies = db.relationship('Movie', secondary=search_history, backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
+    movies = db.relationship('Movie', secondary=search_history, backref=db.backref('movies', lazy='dynamic'), lazy='dynamic')
     @property
     def password(self):
         raise AttributeError('Password is not a readable attribute')
@@ -193,8 +194,9 @@ def create_movie_and_year(title, release_year, rank=None):
     if not Year.query.filter_by(name=release_year).first():
         db.session.add(Year(name=release_year))
     movie = Movie(title=title, release_year=release_year, rank=rank)
-    if (current_user.is_authenticated):
-        User.query.filter_by(id=current_user.id).first().movies.append(movie)
+    user = User.query.filter_by(id=current_user.id).first()
+    if current_user.is_authenticated and movie not in user.movies:
+        user.movies.append(movie)
     db.session.add(movie)
     db.session.commit()
     return movie
@@ -205,7 +207,7 @@ def create_movie_and_year(title, release_year, rank=None):
 # EFFECTS: increments score for game at game_id by one and adds the guess to the
 #          "list" of guesses attached to game (all if guess hasn't already been made)
 def increment_score(game, guess, movie):
-    if guess not in game.guesses:
+    if movie not in game.guesses:
         game.current_score += 1
         game.guesses.append(movie)
         db.session.commit()
@@ -256,6 +258,7 @@ def register():
         user = User(username=form.username.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
+        flash('You have successfully registered a new account!')
         return redirect(url_for('login'))
     return render_template('register.html', form=form, logged_in=current_user.is_authenticated)
 
@@ -269,12 +272,12 @@ def movie_search():
     elif 'title' in form.errors: flash(form.errors['title'][0])
     return render_template('movie_form.html', form=form, logged_in=current_user.is_authenticated)
 
-@app.route('/all_movies', methods=['GET', 'POST'])
-def all_movies():
+@app.route('/search_history', methods=['GET', 'POST'])
+def search_history():
     if current_user.is_authenticated:
-        movies = User.query.filter_by(id=current_user.id).first().movies
+        movies = User.query.filter_by(id=current_user.id).first().movies.all()
     else: movies = []
-    return render_template('all_movies.html', movies=movies, logged_in=current_user.is_authenticated)
+    return render_template('search_history.html', movies=movies, logged_in=current_user.is_authenticated)
 
 @app.route('/movie/<title>', methods=['GET', 'POST'])
 def display_movie(title):
@@ -296,13 +299,13 @@ def play_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
     if game_form.validate_on_submit():
         ia = IMDb()
-        top_250 = [str(title) for title in ia.get_top250_movies()]
+        top_250 = [str(title) for title in ia.get_top250_movies()]  # get top 250 movie titles from IMDb
         rank = None
         already_guessed = False
         for i in range(0, 250):
             if (game_form.guess.data == top_250[i]): rank = i + 1
+        movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
         if rank:
-            movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
             already_guessed = increment_score(game=game, guess=game_form.guess.data, movie=movie)
         db.session.commit()
         return render_template('game_result.html', game=game, guesses=game.guesses, to_go=250-len(game.guesses.all()), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
@@ -314,7 +317,7 @@ def new_game(username):
     game = Game(player=username, current_score=0, guesses=[])
     db.session.add(game)
     db.session.commit()
-    return url_for('play_game', game_id=game.id)
+    return redirect(url_for('play_game', game_id=game.id))
 
 @app.route('/delete/<game_id>', methods=['GET', 'POST'])
 @login_required
@@ -329,7 +332,7 @@ def delete(game_id):
 def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
-    return render_template('my_games.html', games=games, new_game=new_game, logged_in=current_user.is_authenticated)
+    return render_template('my_games.html', games=games, username=username, logged_in=current_user.is_authenticated)
 
 @app.route('/display_game/<game_id>', methods=['GET', 'POST'])
 @login_required

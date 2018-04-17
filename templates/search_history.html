@@ -1,6 +1,8 @@
 {% block content %}
 
-<h3>Search History</h3>
+<h3><a href='/movie_search'>Search</a></h3>
+
+<br><h3>Search History</h3>
 {% if logged_in %}
   {% for movie in movies %}
     <form action="/movie/{{ movie.title }}" method='GET'>
@@ -11,8 +13,6 @@
 {% if not logged_in %}
   <p>Log in to view your search history!</p>
 {% endif %}
-
-<br>Search <a href='/movie_search'>here</a>!
 
 {% endblock %}
 
