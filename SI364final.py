@@ -9,14 +9,6 @@ from bs4 import BeautifulSoup
 import requests, re
 from imdb import IMDb # pip install imdbpy
 import tweepy
-import twitter_info # create a file called twitter_info.py in the same directory as this repo and add the following info
-consumer_key = twitter_info.consumer_key
-consumer_secret = twitter_info.consumer_secret
-access_token = twitter_info.access_token
-access_token_secret = twitter_info.access_token_secret
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-twitter = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 from flask_script import Manager, Shell
 
