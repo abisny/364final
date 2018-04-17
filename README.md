@@ -13,20 +13,20 @@
 This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from both IMDb and Twitter (I used the IMDb and Twitter API's in addition to Beautiful Soup to scrape some of IMDb's actual website). IMDb supplies the year the movie in question was released and also a link to the movie searched on IMDb. If the user creates an account and/or logs in, they can play a game based on IMDb's top 250 movie list, which I have secured via the IMDb API. The user attempts to guess any/all of the 250 movies in question, and the game is then saved to their account. A user is only allowed to continue games they have created, though they can view the top scores, which includes a list of the top 10 scoring games out of all games (by any user).
 
 ### Routes
-`'/'` --> `base.html`
-`'/login'` --> `login.html`
-`'/logout'` --> logs out `current_user` and redirects to `'/''`
-`'/register'` --> `register.html`
-`'/movie_search'` --> `movie_form.html`
-`'/search_history'` --> `search_history.html`
-`'/movie/<title>'` --> `movie_info.html`
-`'/delete_movies'` --> deletes all `Movie` objects and redirects to `'/movie_search'`
-`'/play_game/<game_id>'` --> `game.html` and `game_result.html`
-`'/new_game/<username>'` --> creates a new `Game` object and redirects to `'/play_game/<game_id>'`
-`'/delete/<game_id'` --> deletes `Game` object and redirects to `'/my_games'`
-`'/my_games'` --> `my_gates.html`
-`'/display_game/<game_id>'` --> `game_info.html`
-`'/top_scores'` --> `top_scores.html`
+*`'/'` -> `base.html`
+*`'/login'` -> `login.html`
+*`'/logout'` -> logs out `current_user` and redirects to `'/''`
+*`'/register'` -> `register.html`
+*`'/movie_search'` -> `movie_form.html`
+*`'/search_history'` -> `search_history.html`
+*`'/movie/<title>'` -> `movie_info.html`
+*`'/delete_movies'` -> deletes all `Movie` objects and redirects to `'/movie_search'`
+*`'/play_game/<game_id>'` -> `game.html` and `game_result.html`
+*`'/new_game/<username>'` -> creates a new `Game` object and redirects to `'/play_game/<game_id>'`
+*`'/delete/<game_id'` -> deletes `Game` object and redirects to `'/my_games'`
+*`'/my_games'` -> `my_gates.html`
+*`'/display_game/<game_id>'` -> `game_info.html`
+*`'/top_scores'` -> `top_scores.html`
 
 ### **Documentation README Requirements**
 
