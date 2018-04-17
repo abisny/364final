@@ -9,14 +9,14 @@ from bs4 import BeautifulSoup
 import requests, re
 from imdb import IMDb # pip install imdbpy
 import tweepy
-import twitter_info # this needs to be filled out and in the same directory
-# consumer_key = twitter_info.consumer_key
-# consumer_secret = twitter_info.consumer_secret
-# access_token = twitter_info.access_token
-# access_token_secret = twitter_info.access_token_secret
-# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-# auth.set_access_token(access_token, access_token_secret)
-# twitter = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
+import twitter_info # create a file called twitter_info.py in the same directory as this repo and add the following info
+consumer_key = twitter_info.consumer_key
+consumer_secret = twitter_info.consumer_secret
+access_token = twitter_info.access_token
+access_token_secret = twitter_info.access_token_secret
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+twitter = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 from flask_script import Manager, Shell
 
@@ -282,7 +282,12 @@ def search_history():
 @app.route('/movie/<title>', methods=['GET', 'POST'])
 def display_movie(title):
     movie = Movie.query.filter_by(title=title).first()
-    return render_template('movie_info.html', movie=movie, logged_in=current_user.is_authenticated)
+    ia = IMDb()
+    top_250 = [str(title) for title in ia.get_top250_movies()]  # get top 250 movie titles from IMDb
+    rank = None
+    for i in range(0, 250):
+        if (title == top_250[i]): rank = i + 1
+    return render_template('movie_info.html', movie=movie, imdb_rank=rank, logged_in=current_user.is_authenticated)
 
 @app.route('/delete_movies', methods=['GET', 'POST'])
 def delete_movies():

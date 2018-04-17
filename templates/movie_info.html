@@ -1,9 +1,18 @@
 {% block content %}
 
-<h3>Information for Movie</h3> (ID #{{ movie.id }})
+<h2> <i>{{ movie.title }}</i> (Movie #{{ movie.id }}) </h2>
+<hr>
 
-<br> IMDb DATA
-<br> TWITTER DATA
+<p>
+  Release Year: {{ movie.release_year }}<br>
+  IMDb Ranking: {% if imdb_rank %} {{ imdb_rank }}<br> {% endif %}
+                {% if not imdb_rank %} This movie was not in IMDb's top 250<br> {% endif %}
+  <a href='http://www.imdb.com/find?q= + {{ movie.title }} + '&s=all''>{{ movie.title }}</a> on IMDb
+</p>
+
+<p>
+  TWITTER DATA
+</p>
 
 <form action='/delete_movies' method='GET'>
   <input type='submit' value='Clear Search History'>
