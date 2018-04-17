@@ -8,6 +8,14 @@ from flask import Flask, render_template, session, redirect, url_for, flash, req
 from bs4 import BeautifulSoup
 import requests, re
 from imdb import IMDb # pip install imdbpy
+import twitter_info # this needs to be filled out and in the same directory
+# consumer_key = twitter_info.consumer_key
+# consumer_secret = twitter_info.consumer_secret
+# access_token = twitter_info.access_token
+# access_token_secret = twitter_info.access_token_secret
+# auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+# auth.set_access_token(access_token, access_token_secret)
+# twitter = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 from flask_script import Manager, Shell
 
@@ -60,13 +68,21 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 ##### MODELS #####
 ##################
 
+# ASSOCIATION TABLE: many-to-many relationship between games and movies
+guessed_movies = db.Table('guessed_movies', db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+                                            db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
+
+# ASSOCIATION TABLE: many-to-many relationship between users and movies
+search_history = db.Table('search_history', db.Column('username', db.String, db.ForeignKey('users.username')),
+                                            db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     games = db.relationship('Game', backref='User') # one-to-many relationship between a user and its games
-    movies = db.relationship('Movie', secondary=search_history, backref=db.backref('movies', lazy='dynamic'), lazy='dynamic')
+    movies = db.relationship('Movie', secondary=search_history, backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
     @property
     def password(self):
         raise AttributeError('Password is not a readable attribute')
@@ -79,15 +95,6 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id)) # returns User object or None
-
-# ASSOCIATION TABLE: many-to-many relationship between games and movies
-guessed_movies = db.Table('guessed_movies', db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
-                                            db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
-
-# ASSOCIATION TABLE: many-to-many relationship between users and movies
-search_history = db.Table('search_history', db.Column('username', db.String, db.ForeignKey('users.username')),
-                                            db.Column('movie_title', db.String, db.ForeignKey('movies.title')))
-# TODO: run a migration so that this association table will generate and the code will run
 
 class Movie(db.Model):
     __tablename__ = "movies"
@@ -111,7 +118,7 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player = db.Column(db.String(64), db.ForeignKey('users.username'))
     current_score = db.Column(db.Integer)
-    guesses = db.relationship('Movie', secondary=guessed_movies, backref=db.backref('movies', lazy='dynamic'), lazy='dynamic')
+    guesses = db.relationship('Movie', secondary=guessed_movies, backref=db.backref('games', lazy='dynamic'), lazy='dynamic')
     def __repr__(self):
         return "Game #{} ({}): {}".format(self.id, self.player, self.current_score)
 
@@ -257,7 +264,6 @@ def movie_search():
     form = MovieForm()
     if form.validate_on_submit():
         movie = imdb_get_movie(title=form.title.data)
-        twitter_data = requests.get('https://api.twitter.com/1.1/search/tweets.json?q={}&count=5'.format(form.title.data)).text
         # TODO: get appropriate Twitter data to display in '/movie/<title>' route
         return redirect(url_for('display_movie', title=movie.title))
     elif 'title' in form.errors: flash(form.errors['title'][0])
@@ -266,7 +272,7 @@ def movie_search():
 @app.route('/all_movies', methods=['GET', 'POST'])
 def all_movies():
     if current_user.is_authenticated:
-        movies = User.query.filter_by(current_user.id).first().movies
+        movies = User.query.filter_by(id=current_user.id).first().movies
     else: movies = []
     return render_template('all_movies.html', movies=movies, logged_in=current_user.is_authenticated)
 
@@ -299,8 +305,16 @@ def play_game(game_id):
             movie = imdb_get_movie(title=game_form.guess.data, rank=rank)
             already_guessed = increment_score(game=game, guess=game_form.guess.data, movie=movie)
         db.session.commit()
-        return render_template('game_result.html', game=game, guesses=game.guesses, to_go=250-len(guesses), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
+        return render_template('game_result.html', game=game, guesses=game.guesses, to_go=250-len(game.guesses.all()), rank=rank, already_guessed=already_guessed, logged_in=current_user.is_authenticated)
     return render_template('game.html', form=game_form, logged_in=current_user.is_authenticated)
+
+@app.route('/new_game/<username>')
+@login_required
+def new_game(username):
+    game = Game(player=username, current_score=0, guesses=[])
+    db.session.add(game)
+    db.session.commit()
+    return url_for('play_game', game_id=game.id)
 
 @app.route('/delete/<game_id>', methods=['GET', 'POST'])
 @login_required
@@ -315,16 +329,13 @@ def delete(game_id):
 def view_my_scores():
     username = User.query.filter_by(id=current_user.id).first().username
     games = Game.query.filter_by(player=username).all()
-    new_game = None
-    # TODO: fix new_game; it is currently setting ID to None
-    if not games: new_game = Game(player=username, current_score=0)
     return render_template('my_games.html', games=games, new_game=new_game, logged_in=current_user.is_authenticated)
 
 @app.route('/display_game/<game_id>', methods=['GET', 'POST'])
 @login_required
 def display_game(game_id):
     game = Game.query.filter_by(id=game_id).first()
-    return render_template('game_info.html', game=game, guesses=game.guesses, to_go=250-len(guesses), logged_in=current_user.is_authenticated)
+    return render_template('game_info.html', game=game, guesses=game.guesses, to_go=250-len(game.guesses.all()), logged_in=current_user.is_authenticated)
 
 @app.route('/top_scores', methods=['GET', 'POST'])
 def view_scores():
