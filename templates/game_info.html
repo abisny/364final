@@ -5,7 +5,7 @@
 <p>Current Score: {{ game.current_score }}</p>
 
 {% for movie in guesses %}
-    <li><i>{{ movie.title }} </i>
+    <li><i>{{ movie.title }}</i> ({{ movie.rank }})
 {% endfor %}
 
 <form action='/delete/{{ game.id }}' method='GET'>
