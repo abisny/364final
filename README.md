@@ -13,10 +13,10 @@
 This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from both IMDb and Twitter (I used the IMDb and Twitter API's in addition to Beautiful Soup to scrape some of IMDb's actual website). IMDb supplies the year the movie in question was released and also a link to the movie searched on IMDb. If the user creates an account and/or logs in, they can play a game based on IMDb's top 250 movie list, which I have secured via the IMDb API. The user attempts to guess any/all of the 250 movies in question, and the game is then saved to their account. A user is only allowed to continue games they have created, though they can view the top scores, which includes a list of the top 10 scoring games out of all games (by any user).
 
 ### **How to Use**
-A non-user can search for movies and receive information from IMDb, but cannot view search history or play a game. However, the non-user can view the top scores of all games by any user at the the `/top_scores` route.
-Once logged in, a user can do two main exercises:
- (1) The user can search for movies and then view their search history, which will update with movies searched for on the `/movie_search` route and also on the `/play_game` route. A user can "clear" their search history (which deletes all `Movie` objects for which they have searched).
- (2) The user can create a new game or continue an old one via the `my_games` route, which is only viewable to a logged in user. The game allows the user to enter the title of a movie, and the user receives a point each time they guess a movie that is in IMDb's top 250 movies (which was retrieved via the API). A `Game` object can be deleted.
+* A non-user can search for movies and receive information from IMDb, but cannot view search history or play a game. However, the non-user can view the top scores of all games by any user at the the `/top_scores` route.
+* Once logged in, a user can do two main exercises:
+ 1. The user can search for movies and then view their search history, which will update with movies searched for on the `/movie_search` route and also on the `/play_game` route. A user can "clear" their search history (which deletes all `Movie` objects for which they have searched).
+ 2. The user can create a new game or continue an old one via the `my_games` route, which is only viewable to a logged in user. The game allows the user to enter the title of a movie, and the user receives a point each time they guess a movie that is in IMDb's top 250 movies (which was retrieved via the API). A `Game` object can be deleted.
 
 ### **Routes**
 - `'/'` -> `base.html`
