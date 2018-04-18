@@ -260,7 +260,7 @@ def movie_search():
     if form.validate_on_submit():
         movie = imdb_get_movie(title=form.title.data)
         return redirect(url_for('display_movie', title=movie.title))
-    elif 'title' in form.errors: flash(form.errors['title'][0])
+    flash(form.errors['title'][0])
     return render_template('movie_form.html', form=form, logged_in=current_user.is_authenticated)
 
 @app.route('/search_history', methods=['GET', 'POST'])

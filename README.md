@@ -12,10 +12,16 @@
 ### App Description
 This app is an interactive movie database based on IMDb. Users can search for a movie to acquire information about it from both IMDb and Twitter (I used the IMDb and Twitter API's in addition to Beautiful Soup to scrape some of IMDb's actual website). IMDb supplies the year the movie in question was released and also a link to the movie searched on IMDb. If the user creates an account and/or logs in, they can play a game based on IMDb's top 250 movie list, which I have secured via the IMDb API. The user attempts to guess any/all of the 250 movies in question, and the game is then saved to their account. A user is only allowed to continue games they have created, though they can view the top scores, which includes a list of the top 10 scoring games out of all games (by any user).
 
+### **How to Use**
+A non-user can search for movies and receive information from IMDb, but cannot view search history or play a game. However, the non-user can view the top scores of all games by any user at the the `/top_scores` route.
+Once logged in, a user can do two main exercises:
+ (1) The user can search for movies and then view their search history, which will update with movies searched for on the `/movie_search` route and also on the `/play_game` route. A user can "clear" their search history (which deletes all `Movie` objects for which they have searched).
+ (2) The user can create a new game or continue an old one via the `my_games` route, which is only viewable to a logged in user. The game allows the user to enter the title of a movie, and the user receives a point each time they guess a movie that is in IMDb's top 250 movies (which was retrieved via the API). A `Game` object can be deleted.
+
 ### **Routes**
 - `'/'` -> `base.html`
 - `'/login'` -> `login.html`
-- `'/logout'` -> logs out `current_user` and redirects to `'/''`
+- `'/logout'` -> logs out `current_user` and redirects to `'/'`
 - `'/register'` -> `register.html`
 - `'/movie_search'` -> `movie_form.html`
 - `'/search_history'` -> `search_history.html`
@@ -24,13 +30,9 @@ This app is an interactive movie database based on IMDb. Users can search for a 
 - `'/play_game/<game_id>'` -> `game.html` and `game_result.html`
 - `'/new_game/<username>'` -> creates a new `Game` object and redirects to `'/play_game/<game_id>'`
 - `'/delete/<game_id'` -> deletes `Game` object and redirects to `'/my_games'`
-- `'/my_games'` -> `my_gates.html`
+- `'/my_games'` -> `my_games.html`
 - `'/display_game/<game_id>'` -> `game_info.html`
 - `'/top_scores'` -> `top_scores.html`
-
-### **Documentation README Requirements**
-
-- [ ] The `README.md` file should include a list of all of the routes that exist in the app and the names of the templates each one should render OR, if a route does not render a template, what it returns (e.g. `/form` -> `form.html`, like [the list we provided in the instructions for HW2](https://www.dropbox.com/s/3a83ykoz79tqn8r/Screenshot%202018-02-15%2013.27.52.png?dl=0) and like you had to on the midterm, or `/delete -> deletes a song and redirects to index page`, etc).
 
 ### **Code Requirements**
 
